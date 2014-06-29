@@ -1,23 +1,24 @@
 {
-    "name": "cs634-association-mining",
-    "version": "0.0.0",
-    "description": "\"implementation of project 1\"",
-    "main": "server.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/dclaze/cs634-association-mining.git"
-    },
-    "author": "doug colaizzo",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/dclaze/cs634-association-mining/issues"
-    },
-    "homepage": "https://github.com/dclaze/cs634-association-mining",
-    "dependencies": {
-        "nconf": "~0.6.9"
-    }
+  "name": "cs634-association-mining",
+  "version": "0.0.0",
+  "description": "\"implementation of project 1\"",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dclaze/cs634-association-mining.git"
+  },
+  "author": "doug colaizzo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dclaze/cs634-association-mining/issues"
+  },
+  "homepage": "https://github.com/dclaze/cs634-association-mining",
+  "dependencies": {
+    "nconf": "~0.6.9",
+    "mongoose": "~3.8.12"
+  }
 }

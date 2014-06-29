@@ -1,6 +1,6 @@
 {
-    "url": "<url>",
-    "username": "<username>",
-    "password": "<password>",
-    "defaultDatabase": "<database>"
+    "url": "ds037698.mongolab.com:37698",
+    "username": "cs634",
+    "password": "cs634",
+    "defaultDatabase": "association_mining"
 }
