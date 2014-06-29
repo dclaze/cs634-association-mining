@@ -1,20 +1,6 @@
-// Given a list of transations
-//  First group by item
-
-// Calculate Frequency
-//  # of occurences / # of transactions
-
-// Calculate the support of an association
-//  # of occurences of all items / # of transactions
-
-// Calculate the confidence of an association
-//  support of association / support of item
-
 // Apriori Principle
 // - Any subset of a frequent itemset must be frequent.
 // - Any superset of a non-frequent itemset must be non-frequent.
-
-// Frequent item set === more than occurences
 
 Array.prototype.equals = function(otherArray) {
     return (this.length == otherArray.length) && this.every(function(item, i) {
