@@ -1,8 +1,6 @@
 {
-    "database": {
-        "url": "<url>",
-        "username": "<username>",
-        "password": "<password>",
-        "defaultDatabase": "<database>"
-    }
+    "url": "<url>",
+    "username": "<username>",
+    "password": "<password>",
+    "defaultDatabase": "<database>"
 }
