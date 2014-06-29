@@ -98,27 +98,11 @@ database.store("B", "C")
     .store("A", "B");
 
 
-
-// A B C D
-// 4*3*2=24
-
-// The set of subsets of {1} is {{}, {1}}
-// For {1, 2}, take {{}, {1}}, add 2 to each subset to get {{2}, {1, 2}} and take the union with {{}, {1}} to get {{}, {1}, {2}, {1, 2}}
-// Repeat till you reach n
-
-var factorial = function(number) {
-    if (number === 0) {
-        return 1;
-    } else {
-        return number * factorial(number - 1);
-    }
-}
-
 var Apriori = function() {
     var transactions = database.getAllTransactions();
     var allSets = [];
     for (var i = 0; i < transactions.length; i++) {
-        allSets = allSets.concat(getItemSets(transactions[i].items));
+        allSets = allSets.concat(getAllItemSets(transactions[i].items));
     }
 
     var maxItemSet = Math.max.apply(Math, allSets.map(function(set) {
@@ -143,7 +127,7 @@ var Apriori = function() {
     return allAssociationRules;
 }
 
-var getItemSets = function(set) {
+var getAllItemSets = function(set) {
     var result = [];
     var combos = function(item, set) {
         for (var i = 0; i < set.length; i++) {
@@ -156,7 +140,39 @@ var getItemSets = function(set) {
     return result;
 }
 
-//HANDLE LARGE AMOUNTS OF DATA USING THREADING
+var getKItemSets = function(allSets, k) {
+    var index = allSets.length - 1;
+    var kItemSet = [];
+    while (index > -1) {
+        if (allSets[index].length == k) {
+            kItemSet.push.apply(kItemSet, allSets.splice(index, 1));
+        }
+        index--;
+    }
+    return kItemSet;
+}
+
+var isFrequent = function(set) {
+    return database.query(set).length > 1;
+}
+
+var removeNonFrequentSuperSets = function(allSets, nonFrequentSet) {
+    for (var i = 0; i < nonFrequentSet.length; i++) {
+        var index = allSets.length - 1;
+        while (index > -1) {
+            var nextSet = allSets[index];
+            var overlap = nextSet.every(function(item) {
+                return item == nonFrequentSet[i];
+            });
+            if (overlap)
+                allSets.splice(index, 1);
+
+            index--;
+        }
+    }
+}
+
+//TODO: HANDLE LARGE AMOUNTS OF DATA USING THREADING
 var getAssociationRules = function(frequentSets) {
     var index = frequentSets.length;
     var rulePairs = [];
@@ -180,42 +196,6 @@ var getAssociationRules = function(frequentSets) {
     return rulePairs;
 }
 
-var getKItemSets = function(allSets, k) {
-    var index = allSets.length - 1;
-    var kItemSet = [];
-    while (index > -1) {
-        if (allSets[index].length == k) {
-            kItemSet.push.apply(kItemSet, allSets.splice(index, 1));
-        }
-        index--;
-    }
-    return kItemSet;
-}
-
-var removeNonFrequentSuperSets = function(allSets, nonFrequentSet) {
-    for (var i = 0; i < nonFrequentSet.length; i++) {
-        var index = allSets.length - 1;
-        while (index > -1) {
-            var nextSet = allSets[index];
-            var overlap = nextSet.every(function(item) {
-                return item == nonFrequentSet[i];
-            });
-            if (overlap)
-                allSets.splice(index, 1);
-
-            index--;
-        }
-    }
-}
-
-var isFrequent = function(set) {
-    return database.query(set).length > 1;
-}
-
-
-
-
-
 var calculateItemSetSupport = function(itemSet) {
     var numberOfTransactions = database.getAllTransactions().length;
     var numberOfContainingTransactions = database.query(itemSet).length;
@@ -228,43 +208,5 @@ var calculateItemSetAssociativity = function(leftSet, rightSet) {
     return {
         support: totalSetSupport,
         confidence: totalSetSupport / leftSetSupport
-    }
-}
-
-var findSubsets = function(nextSet) {
-    var allSets = [];
-    allSets.push(nextSet);
-
-    var nextItem = nextSet.pop();
-    allSets.push([nextItem]);
-    if (nextSet.length) {
-        for (var i = 0; i < nextSet.length; i++) {
-            allSets.push([].concat(nextItem, nextSet[i]));
-        }
-
-        allSets.concat(findSubsets(nextSet));
-    }
-
-    return allSets;
-}
-
-var getAllItemSetPermutations = function() {
-    var permutations = [];
-    var transactions = database.getAllTransactions();
-    for (var i = 0; i < transactions.length; i++) {
-        var items = transactions[i].items;
-        var permutations = getPerumatations(items);
-        permutations.push();
-    }
-
-    return permutations;
-}
-
-var getPerumatations = function(items) {
-    var newPermutations = [];
-    for (var i = 0; i < items.length; i++) {
-        for (var j = i + 1; j < items.length; j++) {
-            newPermutations.push([items[i], items[j]]);
-        }
     }
 }
