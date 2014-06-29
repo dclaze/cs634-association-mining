@@ -2,6 +2,7 @@
     "database": {
         "url": "<url>",
         "username": "<username>",
-        "password": "<password-here>"
+        "password": "<password>",
+        "defaultDatabase": "<database>"
     }
 }
