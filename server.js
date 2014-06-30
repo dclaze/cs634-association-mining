@@ -1,7 +1,25 @@
  var fs = require('fs'),
      nconf = require('nconf'),
      mongoose = require('mongoose'),
-     AssociationMiner = require(__dirname + "/associationMiner");
+     AssociationMiner = require(__dirname + "/associationMiner"),
+     express = require('express'),
+     Q = require('Q'),
+     app = express();
+
+ app.use(express.static(__dirname));
+
+ app.get('/getAssociationRules/:databaseName/:supportMin/:confidenceMin', function(req, res) {
+     var database = req.params.databaseName;
+     var supportMin = req.params.supportMin;
+     var confidenceMin = req.params.confidenceMin;
+
+     getAssociationRules(databases[database], supportMin, confidenceMin)
+         .then(function(rules) {
+             res.send(rules);
+         })
+ });
+
+ app.listen(44544);
 
  var database = nconf.file({
      file: 'database.json'
@@ -15,8 +33,6 @@
  var mongoUrl = ['mongodb://', username, ':', password, '@', url, '/', defaultDatabase].join("");
  mongoose.connect(mongoUrl, function(err) {
      if (err) throw err;
-
-     mine();
  });
 
  var Schema = mongoose.Schema,
@@ -33,16 +49,26 @@
      date: Date
  });
 
- var Transaction = mongoose.model('Transaction', TransactionSchema);
+ var databases = {
+     0: Transaction = mongoose.model('Transaction', TransactionSchema),
+     1: Transaction = mongoose.model('Transaction_1', TransactionSchema),
+     2: Transaction = mongoose.model('Transaction_2', TransactionSchema),
+     3: Transaction = mongoose.model('Transaction_3', TransactionSchema),
+     4: Transaction = mongoose.model('Transaction_4', TransactionSchema),
+     5: Transaction = mongoose.model('Transaction_5', TransactionSchema)
+ }
 
- var mine = function() {
-     var miner = new AssociationMiner(Transaction);
-     var supportMin = .2;
-     var confidenceMin = .5;
+ var getAssociationRules = function(database, supportMin, confidenceMin) {
+     var deferred = Q.defer();
+
+     var miner = new AssociationMiner(database);
      miner.mine(supportMin, confidenceMin, function(rules) {
-         var rulesAsString = rules.map(function(rule) {
-             return [rule.left, "->", rule.right, "[", rule.support.toFixed(2) * 100, "%", ",", rule.confidence * 100, "%", "]"].join(" ");
-         })
-         console.log(rulesAsString)
+         // var rulesAsString = rules.map(function(rule) {
+         //     return [rule.left, "->", rule.right, "[", rule.support.toFixed(2) * 100, "%", ",", rule.confidence * 100, "%", "]"].join(" ");
+         // })
+         // console.log(rulesAsString)
+         deferred.resolve(rules);
      });
+
+     return deferred.promise;
  }
