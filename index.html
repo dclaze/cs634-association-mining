@@ -1,5 +1,74 @@
 <html>
-	<head>
-		<script type="text/javascript" src="associations.js"></script>
-	</head>
+
+<head>
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <link rel="stylesheet" href="bower_components\bootstrap\dist\css\bootstrap.min.css">
+    <style>
+    td {
+        padding: 10px;
+        border: 1px solid black;
+    }
+    </style>
+    <script type="text/javascript" src="main.js"></script>
+</head>
+
+<body ng-app="AssociationMining">
+    <div ng-controller="Main">
+        </br>
+        <div style="position:absolute; top:15px; rigth:15px;">
+            <h1>Transactions</h1>
+            <label>
+                Database
+                <select ng-model="database">
+                    <option value="0">Zero</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                    <option value="4">Four</option>
+                    <option value="5">Five</option>
+                </select>
+            </label>
+            <button ng-click="loadDatabase()">Load Database</button>
+            </br>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Products</td>
+                        <td>Purchase Date</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="transaction in transactions">
+                        <td>
+                            <div ng-repeat="p in transaction.products">
+                                {{p.name}}
+                            </div>
+                        </td>
+                        <td>{{transaction.date | date:'shortDate'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        </br>
+        <div style="position:absolute; top:15px; right:0;">
+            <h1>Rules</h1>
+            <label>
+                Support
+                <input type="number" value="0" max="1" ng-model="support"></input>
+            </label>
+            <label>
+                Confidence
+                <input type="number" value="0" max="1" ng-model="confidence"></input>
+            </label>
+            <button ng-click="getAssociations()">Load</button>
+            <ul>
+                <li ng-repeat="rule in associationRules">
+                    {{rule.left}} -> {{rule.right}} [{{rule.support}} % {{rule.confidence}} %]
+                </li>
+            </ul>
+        </div>
+        <button style="position:absolute; right:0; top:0" ng-click="clear()">Clear</button>
+    </div>
+</body>
+
 </html>
