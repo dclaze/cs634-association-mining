@@ -8,6 +8,7 @@
 
  app.use(express.static(__dirname));
 
+
  app.get('/getAssociationRules/:databaseName/:supportMin/:confidenceMin', function(req, res) {
      var database = req.params.databaseName;
      var supportMin = req.params.supportMin;
@@ -17,6 +18,15 @@
          .then(function(rules) {
              res.send(rules);
          })
+ });
+
+ app.get('/loadDatabase/:databaseName', function(req, res) {
+     var databaseName = req.params.databaseName;
+     var database = databases[databaseName];
+     database.find(function(err, docs) {
+         res.send(docs);
+         res.end();
+     })
  });
 
  app.listen(44544);
@@ -63,10 +73,6 @@
 
      var miner = new AssociationMiner(database);
      miner.mine(supportMin, confidenceMin, function(rules) {
-         // var rulesAsString = rules.map(function(rule) {
-         //     return [rule.left, "->", rule.right, "[", rule.support.toFixed(2) * 100, "%", ",", rule.confidence * 100, "%", "]"].join(" ");
-         // })
-         // console.log(rulesAsString)
          deferred.resolve(rules);
      });
 
