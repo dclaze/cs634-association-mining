@@ -1,12 +1,48 @@
  var fs = require('fs'),
-     nconf = require('nconf');
+     nconf = require('nconf'),
+     mongoose = require('mongoose'),
+     AssociationMiner = require(__dirname + "/associationMiner");
 
- var config = nconf.file({
-     file: 'config.json'
+ var database = nconf.file({
+     file: 'database.json'
  });
 
- var url = config.get("database:url");
- var username = config.get("database:username");
- var password = config.get("database:password");
+ var url = database.get("url"),
+     username = database.get("username"),
+     password = database.get("password"),
+     defaultDatabase = database.get("defaultDatabase");
 
- console.log(url, username, password);
+ var mongoUrl = ['mongodb://', username, ':', password, '@', url, '/', defaultDatabase].join("");
+ mongoose.connect(mongoUrl, function(err) {
+     if (err) throw err;
+
+     mine();
+ });
+
+ var Schema = mongoose.Schema,
+     ObjectId = Schema.ObjectId;
+
+ var ProductSchema = new Schema({
+     id: ObjectId,
+     name: String
+ });
+ var Product = mongoose.model('Product', ProductSchema);
+
+ var TransactionSchema = new Schema({
+     products: [ProductSchema],
+     date: Date
+ });
+
+ var Transaction = mongoose.model('Transaction', TransactionSchema);
+
+ var mine = function() {
+     var miner = new AssociationMiner(Transaction);
+     var supportMin = .2;
+     var confidenceMin = .5;
+     miner.mine(supportMin, confidenceMin, function(rules) {
+         var rulesAsString = rules.map(function(rule) {
+             return [rule.left, "->", rule.right, "[", rule.support.toFixed(2) * 100, "%", ",", rule.confidence * 100, "%", "]"].join(" ");
+         })
+         console.log(rulesAsString)
+     });
+ }
